@@ -78,16 +78,31 @@ ip netns exec atc ip -4 addr add dev wan0 192.168.4.1/24 broadcast 192.168.4.255
 ip netns exec srv ip -4 addr add dev srv0 192.168.4.2/24 broadcast 192.168.4.255
 
 # assign IPv6 addresses to inside interfaces
-ip -6 addr add dev cli0 fc00:1::2/32
-ip netns exec atc ip -6 addr add dev lan0 fc00:1::1/32
-ip netns exec atc ip -6 addr add dev wan0 fc00:2::1/32
-ip netns exec srv ip -6 addr add dev srv0 fc00:2::2/32
+if [ -n "$ENABLE_IPV6" ]; then
+	ip -6 addr add dev cli0 fc00:1::2/32
+	ip netns exec atc ip -6 addr add dev lan0 fc00:1::1/32
+	ip netns exec atc ip -6 addr add dev wan0 fc00:2::1/32
+	ip netns exec srv ip -6 addr add dev srv0 fc00:2::2/32
+fi
 
 # Add routes so that out-of-network IPs will be forwarded.
 ip -4 route add 192.168.4.0/24 via 192.168.3.1 dev cli0
-ip -6 route add fc00:2::0/32 via fc00:1::1 dev cli0
 ip netns exec srv ip -4 route add 192.168.3.0/24 via 192.168.4.1 dev srv0
-ip netns exec srv ip -6 route add fc00:1::0/32 via fc00:2::1 dev srv0
+
+if [ -n "$ENABLE_IPV6" ]; then
+	ip -6 route add fc00:2::0/32 via fc00:1::1 dev cli0
+	ip netns exec srv ip -6 route add fc00:1::0/32 via fc00:2::1 dev srv0
+fi
+
+if [ -n "$RESET_DB" ]; then
+  echo "Resetting database"
+  rm db/*.db
+fi
+
+if [ -n "$RESET_LOGS" ]; then
+  echo "Resetting logs"
+  rm log/*.log
+fi
 
 mkdir -p $ATC_ROOT/log
 mkdir -p $ATC_ROOT/db
