@@ -91,7 +91,8 @@ ip netns exec srv ip -6 route add fc00:1::0/32 via fc00:2::1 dev srv0
 
 ip netns exec srv /usr/bin/iperf3 -s -D
 ip netns exec atc $ATCD_PATH --wan wan0 --lan lan0 -Q '/tmp/atcd.db' --insecure -v -b 0.0.0.0:9090 &>atcd.log &
-ip netns exec atc $ATC_API_PATH -W -v -4 192.168.3.1 -6 fc00::1::1 -Q '/tmp/atc_api.db' --assets "$ATC_ROOT/static" &>atc_api.log &
+sleep 3 # wait for atcd to startup
+$ATC_API_PATH -t json://192.168.3.1:9090 -W -v -4 127.0.0.1 -6 fc00::1::1 -Q '/tmp/atc_api.db' --assets "$ATC_ROOT/static" &>atc_api.log &
 
 GRN="\e[32m"
 CLR="\e[39m"
