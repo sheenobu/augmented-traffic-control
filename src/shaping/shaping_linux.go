@@ -377,8 +377,8 @@ func setupRootQdisc(link netlink.Link) error {
 }
 
 func calculateBufferSize(rate uint32, latency uint32) uint32 {
-	if rate == 0 {
-		return 12000 //FIXME: what to do when our rate is 0?
+	if rate == 0 || latency == 0 {
+		return 12000 //FIXME: what to do when our rate or latency is 0?
 	}
 	bufsize := (2 * latency * rate) / 1000;
 	Log.Debugf("Buffer size 2 * %d * %d / 1000 => %d", latency, rate, bufsize);
