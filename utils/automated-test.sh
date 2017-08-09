@@ -8,8 +8,8 @@ echo
 
 # 2G developing urban
 ./bin/atc shape 1 \
-  --dn.rate 300 \
-  --dn.delay 120 \
+  --dn.rate 35 \
+  --dn.delay 650 \
   --up.rate 34 \
   --up.delay 650
 
