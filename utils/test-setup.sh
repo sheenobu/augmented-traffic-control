@@ -107,7 +107,7 @@ fi
 mkdir -p $ATC_ROOT/log
 mkdir -p $ATC_ROOT/db
 
-ip netns exec srv /usr/bin/iperf3 -s -D
+ip netns exec srv /usr/bin/iperf3 -d -V -s &>$ATC_ROOT/log/iperf3.log &
 ip netns exec atc $ATCD_PATH --wan wan0 --lan lan0 -Q "$ATC_ROOT/db/atcd.db" --insecure -v -b 0.0.0.0:9090 &>$ATC_ROOT/log/atcd.log &
 sleep 3 # wait for atcd to startup
 $ATC_API_PATH -t json://192.168.3.1:9090 -W -v -4 127.0.0.1 -6 fc00::1::1 -Q "$ATC_ROOT/db/atc_api.db" --assets "$ATC_ROOT/static" &>$ATC_ROOT/log/atc_api.log &
